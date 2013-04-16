@@ -1,7 +1,8 @@
 open List
-open Mp11common
 
 exception NotImplemented
+
+type point = float * float
 
 let origin = (0.0,0.0)
 
@@ -10,6 +11,11 @@ let ( -- ) ((x0,y0):point) ((x1,y1):point) : point = (x0-.x1, y0-.y1)
 let ( *** ) ((x0,y0):point) ((x1,y1):point) : point = (x0*.x1, y0*.y1)
 
 type transformation = point -> point
+
+type draw_cmd = Pixel of point
+              | Line of point * point
+              | Oval of point * point * point (* three consecutive points of
+                                                 enclosing rectangle *)
 
 type picture = transformation -> draw_cmd list
 
@@ -68,7 +74,8 @@ let ( && ) (pic1:picture) (pic2:picture) : picture
 (* Problem 4: Combine a list of pictures, using &&.  Do *not* use
               recursion directly; use fold_left in List module *)
 let join_list (piclis: picture list) = 
-  fun phi -> (fold_left (fun a b -> a && b) emptypic piclis) phi  (* 1 line *)
+  fun phi ->
+  (fold_left (fun a b -> a && b) emptypic piclis) phi  (* 1 line *)
 
 (* Latex output *)
 
@@ -188,17 +195,17 @@ let nodelist (pic:picture) (w0:float) (h0:float)
       and n = length children
       in let w = sum widths +. hsep *. ((float_of_int )n -. 1.0)
          and h = child_h +. vsep +. h0
-
-         in let xlocs wlis xloc = let arr = (fold_left 
-                    (fun lis elem -> if lis = [] then [xloc +. elem +. hsep] else [elem +. hd lis +. hsep ] @ lis)
-                    [] (wlis)) in xloc :: (rev (tl  arr))
-                and ylocs hlis = map ( fun a -> child_h -. a ) hlis
-                and toplocs wlis xloc =  let e = (fold_left 
-                (fun lis elem ->  if lis = [] then [xloc +. hd wlis +. hsep]
-                else (elem +. (hd lis) +. hsep)
-                :: (hd lis) +. elem /. 2.0 :: (tl lis)) [] wlis)
-                  in map (fun a -> (a, child_h)) ((xloc +. (hd wlis) /. 2.0)::rev
-                  (tl (e )))
+         in let rec xlocs wlis xloc =
+                (* xloc::List.map2 ( fun a b -> a + b ) wlis *)
+                (* List.fold_left (fun a b -> xloc +. hsep ) xloc *)
+                    if wlis = [] then []
+                    else xloc :: xlocs (tl wlis) (xloc +. (hd wlis) +. hsep)
+                and ylocs hlis =
+                    List.map ( fun a -> child_h -. a ) hlis
+                and toplocs wlis xloc =
+                    if wlis = [] then []
+                    else (xloc +. (hd wlis) /. 2.0, child_h)
+                         :: toplocs (tl wlis) (xloc +. (hd wlis) +. hsep)
                 in let child_locs = mkpairs (xlocs widths 0.0) (ylocs heights)
                    and toplocs = toplocs widths 0.0
                    and rootloc = (w/.2.0 -. w0/.2.0, child_h +. vsep)
@@ -211,39 +218,40 @@ let nodelist (pic:picture) (w0:float) (h0:float)
 
 (* Correct output for these examples is given below.
    (Most are shown in the mp write-up.)              *)
-(*
 (* Examples *)
 let box1 = box (0.0,0.0) (1.0,0.0) (1.0,1.0);;
 let leaf1 = (box1, 1.0, 1.0);;
 let t1 = node box1 1.0 1.0 leaf1 leaf1 line;;
 let t2 = node box1 1.0 1.0 t1 leaf1 line;; 
-let (p,_,_) = t2 in draw p;;
 
 (* This example has the same output as the previous one
    example above using "node" *)
+
 let t3 = nodelist box1 1.0 1.0 [leaf1; leaf1] line;;
 let t4 = nodelist box1 1.0 1.0 [t3; leaf1] line;; 
-let (p,_,_) = t4 in draw p;;
 
 let t5 = node box1 1.0 1.0 leaf1 leaf1 manline;;
 let t6 = node box1 1.0 1.0 t5 leaf1 manline;; 
-let (p,_,_) = t6 in draw p;;
 
 let t7 = node box1 1.0 1.0 leaf1 leaf1 (shorten manline);;
 let t8 = node box1 1.0 1.0 t7 leaf1 (shorten manline);; 
-let (p,_,_) = t8 in draw p;;
 
 let t9 = node box1 1.0 1.0 leaf1 leaf1 (shorten line);;
 let t10 = node box1 1.0 1.0 t9 leaf1 (shorten line);; 
-let (p,_,_) = t10 in draw p;;
 
 let treepic (pic,_,_) = pic
 let t11 = rotateAroundPoint (treepic t2) 180.0 (1.0,1.0);;
-draw t11;;
 
-draw (sierpinski 3);;
+(* let (p,_,_) = t2 in draw p;; *)
+(* let (p,_,_) = t4 in draw p;; *)
+(* let (p,_,_) = t6 in draw p;; *)
+(* let (p,_,_) = t8 in draw p;; *)
+(* let (p,_,_) = t10 in draw p;; *)
+(* draw t11;; *)
+
+(* draw (sierpinski 3);; *)
 draw (sierpinski 4);;
-*)
+
 (*
 (* let (p,_,_) = t2 in draw p;; *)
 \put(1.687,2.5){\line(1.,0.){1.}}
