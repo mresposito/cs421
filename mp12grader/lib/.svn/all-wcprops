@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/cs421/!svn/ver/2929/sp2013/private/mps/mp12/mp12grader/lib
+END
+util.ml
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/cs421/!svn/ver/2929/sp2013/private/mps/mp12/mp12grader/lib/util.ml
+END
+test.ml
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/cs421/!svn/ver/2929/sp2013/private/mps/mp12/mp12grader/lib/test.ml
+END
+grader.ml
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/cs421/!svn/ver/2929/sp2013/private/mps/mp12/mp12grader/lib/grader.ml
+END
+main.ml
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/cs421/!svn/ver/2929/sp2013/private/mps/mp12/mp12grader/lib/main.ml
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/cs421/!svn/ver/2929/sp2013/private/mps/mp12/mp12grader/lib/Makefile
+END
