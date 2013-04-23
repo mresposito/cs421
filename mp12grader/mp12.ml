@@ -53,18 +53,16 @@ let rec freevars ((tau,bndvars):typescheme) : string list =
    are replaced by types.  In addition, every occurrence of a
    single type variable must be replaced by the same type. *)
 let instanceOf (tau':typeterm) ((tau,bndvars):typescheme) : bool =
-  let rec help (tau':typeterm) ((tau,bndvars):typescheme) (subs:typeenv) :
-    bool =
-  match tau', tau with
+  let rec help (t1:typeterm) (t2) : bool =
+  match t1, t2 with
     ( Typevar(a), Typevar(b)  ) -> a = b
   | ( IntType, Typevar(_) ) -> true
-  | ( BoolType, Typevar(_)) -> true
+  | ( BoolType, Typevar(x)) -> true
   | ( BoolType, BoolType ) -> true
   | ( IntType, IntType   ) -> true
   | ( FunType( f1,f2 ), FunType(f3,f4) ) -> true
   | _ -> false
-
-  in help tau' (tau, bndvars) []
+  in help tau' tau
 
 (* generalize tau in gamma = i.e. find variables in tau that
    are not free in gamma and return a type scheme that binds them *)
